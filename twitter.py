@@ -35,23 +35,22 @@ class StdOutListener(StreamListener):
 
     def on_error(self, status):
         print (status)
-		
+
 def process_or_store(tweet):
-    print(json.dumps(tweet))
+    print(status.text)
+    #print(json.dumps(tweet))
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_key, access_secret)
 api = tweepy.API(auth)
 
-l = StdOutListener()
-stream = Stream(auth, l)
-stream.filter(track=['#PiratasDelCaribe -filter:retweets', '#GuardianesDeLaGalaxia2 -filter:retweets', '#AlienCovenant -filter:retweets'],languages=["es"])
 
-#q = ['Piratas del Caribe', 'Alien', 'Guardianes de la Galaxia']
+q = ['#AlienCovenant']
 #This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
-#for status in tweepy.Cursor(api.search,q).items(200):
+for status in tweepy.Cursor(api.search,q,lang='es').items(100):
     # Process a single status
-#    process_or_store(status._json) 
+    print(status.text)
+    process_or_store(status._json)
 
 
 
@@ -80,40 +79,3 @@ tweets_by_country = tweets['country'].value_counts()
 #print(tweets_by_country)
 for line in tweets['country']:
     print(line)
-
-fig, ax = plt.subplots()
-ax.tick_params(axis='x', labelsize=15)
-ax.tick_params(axis='y', labelsize=10)
-ax.set_xlabel('Countries', fontsize=15)
-ax.set_ylabel('Number of tweets' , fontsize=15)
-ax.set_title('Top 5 countries', fontsize=15, fontweight='bold')
-tweets_by_country.plot(kind='bar', color='blue')
-plt.show()
-
-fig.savefig('temp.png', dpi=fig.dpi)
-
-tweets['PiratesOfTheCaribbean'] = tweets['text'].apply(lambda tweet: word_in_text('Pirates of the Caribbean',tweet))
-tweets['Alien'] = tweets['text'].apply(lambda tweet: word_in_text('Alien',tweet))
-tweets['Guardian'] = tweets['text'].apply(lambda tweet: word_in_text('Guardian of the Galaxy',tweet))
-
-word_in_text('piratas',pd.Series.to_string(tweets['text']))
-print (tweets['text'])
-prg_langs=['Pirates','Alien','Guardian']
-tweets_by_prg_lang = [tweets['PiratesOfTheCaribbean'].value_counts()[True],
-                      tweets['Alien'].value_counts()[True],
-                      tweets[''].value_counts()[True]]
-
-
-
-x_pos = list(range(len(prg_langs)))
-width = 0.8
-fig, ax = plt.subplots()
-plt.bar(x_pos, tweets_by_prg_lang, width, alpha=1, color='g')
-
-# Setting axis labels and ticks
-ax.set_ylabel('Number of tweets', fontsize=15)
-ax.set_title('Ranking: python vs. javascript vs. ruby (Raw data)', fontsize=10, fontweight='bold')
-ax.set_xticks([p + 0.4 * width for p in x_pos])
-ax.set_xticklabels(prg_langs)
-plt.grid()
-plt.show()
