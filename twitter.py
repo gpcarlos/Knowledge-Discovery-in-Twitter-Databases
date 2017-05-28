@@ -7,9 +7,12 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import json
 import re
+import dataset
+
+from Token_Twitter import consumer_key, consumer_secret, access_key, access_secret
+
 def word_in_text(word, text):
     word = word.lower()
-    print(text);
     text = text.lower()
     match = re.search(word, text)
     if match:
@@ -20,39 +23,39 @@ def word_in_text(word, text):
 class StdOutListener(StreamListener):
 
     def on_data(self, data):
+        try:
+            with open('python.json', 'a') as f:
+                f.write(data)
+                return True
+        except BaseException as e:
+            print("Error on_data: %s" % str(e))
         print (data)
-
         return True
+
 
     def on_error(self, status):
         print (status)
-
+		
 def process_or_store(tweet):
     print(json.dumps(tweet))
 
-CONSUMER_KEY = 'Qs2z9VW6GOGQ9FG90BPVCFLGU'
-CONSUMER_SECRET = 'DqGlTCX3VctW0lBN4LxGVIkanlqXPMznLv97ZMpSdi1xRj5xK4'
-ACCESS_KEY = '515532568-QAK0DF5BCH6K1Wwp39X4kqqVRSxwEQPygAawozsk'
-ACCESS_SECRET = '5vrTZsKwKxoegQ3j6LLvGQCgy2qqvU0Pu72fcZ3P2TGTn'
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_key, access_secret)
 api = tweepy.API(auth)
 
-#l = StdOutListener()
-#stream = Stream(auth, l)
-#stream.filter(track=['Rajoy', 'Iglesias', 'Sánchez', 'Rivera'])
+l = StdOutListener()
+stream = Stream(auth, l)
+stream.filter(track=['#PiratasDelCaribe -filter:retweets', '#GuardianesDeLaGalaxia2 -filter:retweets', '#AlienCovenant -filter:retweets'],languages=["es"])
 
-for status in tweepy.Cursor(api.search,q='java -filter:retweets').items(100):
+#q = ['Piratas del Caribe', 'Alien', 'Guardianes de la Galaxia']
+#This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
+#for status in tweepy.Cursor(api.search,q).items(200):
     # Process a single status
-    process_or_store(status._json) 
+#    process_or_store(status._json) 
 
-#search_text = "Manchester"
-#search_number = 2
-#search_result = api.search(search_text, rpp=search_number)
-#for i in search_result:
-#    print (i.text)
 
-tweets_data_path = 'twits.txt'
+
+tweets_data_path = 'python.json'
 
 
 tweets_data = []
@@ -69,13 +72,48 @@ print (len(tweets_data))
 
 tweets = pd.DataFrame()
 
-tweets['text'] = map(lambda tweet: tweet['text'], tweets_data)
-tweets['lang'] = map(lambda tweet: tweet['lang'], tweets_data)
-tweets['country'] = map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else None, tweets_data)
+tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
+tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
+tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
+
+tweets_by_country = tweets['country'].value_counts()
+#print(tweets_by_country)
+for line in tweets['country']:
+    print(line)
+
+fig, ax = plt.subplots()
+ax.tick_params(axis='x', labelsize=15)
+ax.tick_params(axis='y', labelsize=10)
+ax.set_xlabel('Countries', fontsize=15)
+ax.set_ylabel('Number of tweets' , fontsize=15)
+ax.set_title('Top 5 countries', fontsize=15, fontweight='bold')
+tweets_by_country.plot(kind='bar', color='blue')
+plt.show()
+
+fig.savefig('temp.png', dpi=fig.dpi)
+
+tweets['PiratesOfTheCaribbean'] = tweets['text'].apply(lambda tweet: word_in_text('Pirates of the Caribbean',tweet))
+tweets['Alien'] = tweets['text'].apply(lambda tweet: word_in_text('Alien',tweet))
+tweets['Guardian'] = tweets['text'].apply(lambda tweet: word_in_text('Guardian of the Galaxy',tweet))
+
+word_in_text('piratas',pd.Series.to_string(tweets['text']))
+print (tweets['text'])
+prg_langs=['Pirates','Alien','Guardian']
+tweets_by_prg_lang = [tweets['PiratesOfTheCaribbean'].value_counts()[True],
+                      tweets['Alien'].value_counts()[True],
+                      tweets[''].value_counts()[True]]
 
 
-tweets['Rajoy'] = tweets['text'].apply(lambda tweet: word_in_text('Rajoy', tweettxt))
-tweets['Pedro'] = tweets['text'].apply(lambda tweet: word_in_text('Sánchez', tweettxt))
-tweets['Pablo'] = tweets['text'].apply(lambda tweet: word_in_text('Iglesias', tweettxt))
 
-#print (tweets['Rajoy'].value_counts()[True])
+x_pos = list(range(len(prg_langs)))
+width = 0.8
+fig, ax = plt.subplots()
+plt.bar(x_pos, tweets_by_prg_lang, width, alpha=1, color='g')
+
+# Setting axis labels and ticks
+ax.set_ylabel('Number of tweets', fontsize=15)
+ax.set_title('Ranking: python vs. javascript vs. ruby (Raw data)', fontsize=10, fontweight='bold')
+ax.set_xticks([p + 0.4 * width for p in x_pos])
+ax.set_xticklabels(prg_langs)
+plt.grid()
+plt.show()
