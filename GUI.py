@@ -30,7 +30,9 @@ def annadir():
     ui.label_3.setText(_translate("MainWindow", str2))
 
 def enviar():
+    _translate = QtCore.QCoreApplication.translate
     ui.label_4.setText(_translate("MainWindow", "Capturando..."))
+
     socket.send_json(vector)
 
     if socket.recv_json():
