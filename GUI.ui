@@ -7,34 +7,26 @@
     <x>0</x>
     <y>0</y>
     <width>455</width>
-    <height>207</height>
+    <height>267</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Trabajo Final SD</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>41</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:20pt;&quot;&gt;#&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>20</x>
       <y>30</y>
-      <width>301</width>
+      <width>321</width>
       <height>33</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+     </font>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Añada aquí los Hashtags&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -52,47 +44,183 @@
       <height>33</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+     </font>
+    </property>
     <property name="text">
      <string>Añadir</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>80</y>
-      <width>391</width>
-      <height>17</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Último añadido: </string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>100</y>
-      <width>391</width>
+      <x>30</x>
+      <y>70</y>
+      <width>361</width>
       <height>17</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+     </font>
+    </property>
     <property name="text">
-     <string>Total Hashtags añadidos: </string>
+     <string>Total de terminos añadidos: </string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>120</x>
-      <y>130</y>
-      <width>211</width>
+      <x>40</x>
+      <y>200</y>
+      <width>171</width>
       <height>29</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+     </font>
+    </property>
     <property name="text">
-     <string>Calcular</string>
+     <string>Capturar</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>200</y>
+      <width>171</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+     </font>
+    </property>
+    <property name="text">
+     <string>Procesar</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit_2">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>100</y>
+      <width>51</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+     </font>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>110</y>
+      <width>181</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+     </font>
+    </property>
+    <property name="text">
+     <string>Tiempo de captura (minutos):</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>270</x>
+      <y>100</y>
+      <width>86</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+     </font>
+    </property>
+    <property name="text">
+     <string>Añadir</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>150</y>
+      <width>451</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>85</red>
+          <green>170</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>85</red>
+          <green>170</green>
+          <blue>0</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>148</red>
+          <green>148</green>
+          <blue>148</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <family>Droid Sans</family>
+      <pointsize>17</pointsize>
+     </font>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Capturando...</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
