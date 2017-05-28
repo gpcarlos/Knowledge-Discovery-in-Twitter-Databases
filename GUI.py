@@ -8,6 +8,22 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+i = 0
+vector = []
+
+def funcionAnnadir():
+    global i
+    i=i+1
+    text = ui.lineEdit.text()
+    vector.append(text)
+    print(vector)
+    _translate = QtCore.QCoreApplication.translate
+    str1="Último añadido: #"+text
+    str2="Total Hashtags añadidos: "+str(i)
+    ui.label_2.setText(_translate("MainWindow", str1))
+    ui.label_3.setText(_translate("MainWindow", str2))
+
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -24,6 +40,7 @@ class Ui_MainWindow(object):
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(350, 30, 86, 33))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(funcionAnnadir)
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(40, 80, 391, 17))
         self.label_2.setObjectName("label_2")
@@ -60,4 +77,3 @@ if __name__ == "__main__":
     ui.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
