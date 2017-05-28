@@ -12,14 +12,13 @@ class Worker(Thread):
         self.queue.task_done()
 
 
+nThreads = 20
 try:
-    q = Queue(2)
-    t1 = Worker(q,"T1")
-    t2 = Worker(q,"T1")
-    t1.start()
-    t2.start()
-    q.put(t1)
-    q.put(t2)
+    q = Queue(nThreads)
+    for i in range(nThreads):
+        t = Worker(q,"T"+str(i+1))
+        t.start()
+        q.put(t)
     q.join()
 except:
     print("ERROR")
