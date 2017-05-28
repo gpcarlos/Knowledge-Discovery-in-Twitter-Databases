@@ -20,6 +20,6 @@ print("Subida Finalizada")
 print("Descargando")
 path = "/datos_remotos.txt"
 name = "twitsDescargados.txt"
-file_temp = open(name)
+file_temp = open(name,"a")
 dbx.files_download_to_file(file_temp.name, path)
 print("Descarga Finalizada")
