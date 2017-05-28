@@ -7,11 +7,17 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import zmq
+import json
+
+context = zmq.Context()
+socket = context.socket(zmq.REQ)
+socket.connect("tcp://127.0.0.1:1024")
 
 i = 0
 vector = []
 
-def funcionAnnadir():
+def annadir():
     global i
     i=i+1
     text = ui.lineEdit.text()
@@ -22,6 +28,9 @@ def funcionAnnadir():
     str2="Total Hashtags añadidos: "+str(i)
     ui.label_2.setText(_translate("MainWindow", str1))
     ui.label_3.setText(_translate("MainWindow", str2))
+
+def enviar():
+    socket.send_json(vector)
 
 
 class Ui_MainWindow(object):
@@ -40,7 +49,7 @@ class Ui_MainWindow(object):
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(350, 30, 86, 33))
         self.pushButton.setObjectName("pushButton")
-        self.pushButton.clicked.connect(funcionAnnadir)
+        self.pushButton.clicked.connect(annadir)
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(40, 80, 391, 17))
         self.label_2.setObjectName("label_2")
@@ -50,6 +59,7 @@ class Ui_MainWindow(object):
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(120, 130, 211, 29))
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.clicked.connect(enviar)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
