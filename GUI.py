@@ -57,20 +57,28 @@ def capturar():
 def procesar():
     for i in range(len(vector)-1):
         _translate = QtCore.QCoreApplication.translate
-        ui.label_4.setText(_translate("MainWindow", "Procesando..."))
+        ui.label_4.setText(_translate("MainWindow", "Descargando .json..."))
         ui.label_4.repaint()
         name = str(vector[i])+".json"
         path = "/"+name
         file_temp = open(name,"a")
         dbx.files_download_to_file(file_temp.name, path)
         print("Descarga Finalizada "+name)
+    path = "/Common.json"
+    file_temp = open('Common.json',"a")
+    dbx.files_download_to_file(file_temp.name, path)
+    print("Descarga Finalizada Common.json")
+    ui.label_4.setText(_translate("MainWindow", "¡Descargando!"))
 
-
+    Dialog.show()
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(455, 267)
+        font = QtGui.QFont()
+        font.setFamily("Droid Sans")
+        MainWindow.setFont(font)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
@@ -167,6 +175,34 @@ class Ui_MainWindow(object):
         self.pushButton_4.setText(_translate("MainWindow", "Añadir"))
         self.label_4.setText(_translate("MainWindow", ""))
 
+class Ui_Dialog(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(172, 163)
+        font = QtGui.QFont()
+        font.setFamily("Droid Sans")
+        Dialog.setFont(font)
+        self.pushButton = QtWidgets.QPushButton(Dialog)
+        self.pushButton.setGeometry(QtCore.QRect(10, 20, 151, 29))
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(Dialog)
+        self.pushButton_2.setGeometry(QtCore.QRect(10, 70, 151, 29))
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_3 = QtWidgets.QPushButton(Dialog)
+        self.pushButton_3.setGeometry(QtCore.QRect(10, 120, 151, 29))
+        self.pushButton_3.setObjectName("pushButton_3")
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "Procesar"))
+        self.pushButton.setText(_translate("Dialog", "Impacto"))
+        self.pushButton_2.setText(_translate("Dialog", "Idiomas"))
+        self.pushButton_3.setText(_translate("Dialog", "Medios"))
+
+
 
 if __name__ == "__main__":
     import sys
@@ -175,4 +211,9 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
+
+    Dialog = QtWidgets.QDialog()
+    ui2 = Ui_Dialog()
+    ui2.setupUi(Dialog)
+
     sys.exit(app.exec_())
