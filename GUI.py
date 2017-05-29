@@ -10,6 +10,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 import zmq
 import json
 
+import dropbox
+import tempfile
+import shutil
+from TokenDropbox import token
+dbx = dropbox.Dropbox(token)
+user = dbx.users_get_current_account()
+
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
 socket.connect("tcp://127.0.0.1:1024")
@@ -37,7 +44,7 @@ def annadirT():
     _translate = QtCore.QCoreApplication.translate
     ui.label_4.setText(_translate("MainWindow", str))
 
-def enviar():
+def capturar():
     _translate = QtCore.QCoreApplication.translate
     ui.label_4.setText(_translate("MainWindow", "Capturando..."))
     ui.label_4.repaint()
@@ -46,6 +53,19 @@ def enviar():
 
     if socket.recv_json():
         ui.label_4.setText(_translate("MainWindow", "¡Capturado!"))
+
+def procesar():
+    for i in range(len(vector)-1):
+        _translate = QtCore.QCoreApplication.translate
+        ui.label_4.setText(_translate("MainWindow", "Procesando..."))
+        ui.label_4.repaint()
+        name = str(vector[i])+".json"
+        path = "/"+name
+        file_temp = open(name,"a")
+        dbx.files_download_to_file(file_temp.name, path)
+        print("Descarga Finalizada "+name)
+
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -79,12 +99,14 @@ class Ui_MainWindow(object):
         font.setFamily("Droid Sans")
         self.pushButton_2.setFont(font)
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.clicked.connect(capturar)
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setGeometry(QtCore.QRect(240, 200, 171, 29))
         font = QtGui.QFont()
         font.setFamily("Droid Sans")
         self.pushButton_3.setFont(font)
         self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_3.clicked.connect(procesar)
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_2.setGeometry(QtCore.QRect(210, 100, 51, 33))
         font = QtGui.QFont()
@@ -92,7 +114,6 @@ class Ui_MainWindow(object):
         self.lineEdit_2.setFont(font)
         self.lineEdit_2.setText(str(tiempo))
         self.lineEdit_2.setObjectName("lineEdit_2")
-        self.pushButton_2.clicked.connect(enviar)
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(30, 110, 181, 17))
         font = QtGui.QFont()
@@ -137,7 +158,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Trabajo Final SD"))
-        self.lineEdit.setToolTip(_translate("MainWindow", "<html><head/><body><p>Añada aquí los Hashtags</p><p><br/></p></body></html>"))
+        self.lineEdit.setToolTip(_translate("MainWindow", "<html><head/><body><p>Añada aquí los términos de uno en uno</p><p><br/></p></body></html>"))
         self.pushButton.setText(_translate("MainWindow", "Añadir"))
         self.label_3.setText(_translate("MainWindow", "Total de terminos añadidos: "))
         self.pushButton_2.setText(_translate("MainWindow", "Capturar"))
