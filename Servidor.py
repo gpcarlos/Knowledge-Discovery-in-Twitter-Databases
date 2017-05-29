@@ -2,7 +2,6 @@ import tweepy
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
-
 import dataset
 from datetime import datetime
 from threading import Thread, current_thread
@@ -14,26 +13,24 @@ import dropbox
 import tempfile
 import shutil
 from TokenDropbox import token
-dbx = dropbox.Dropbox(token)
-user = dbx.users_get_current_account()
-
 from Token_Twitter import consumer_key, consumer_secret, access_key, access_secret
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_key, access_secret)
 api = tweepy.API(auth)
-
+dbx = dropbox.Dropbox(token)
+user = dbx.users_get_current_account()
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://127.0.0.1:1024")
 
-class StdOutListener(StreamListener):
+class Listener(StreamListener):
     def on_data(self, data):
         currenttime = datetime.now()
-        diff = currenttime - StdOutListener.inicio
+        diff = currenttime - Listener.inicio
         namefile=current_thread().name+".json"
         #print(namefile+"   "+str(diff.total_seconds()))
         diffmin = diff.total_seconds()/60
-        if diffmin<StdOutListener.limit:
+        if diffmin<Listener.limit:
             try:
                 with open('Common.json', 'a') as fg:
                     with open(namefile, 'a') as f:
@@ -59,7 +56,7 @@ class Worker(Thread):
         name = current_thread().name+".json"
         with open(name, "a") as f:
             f.close()
-        l = StdOutListener()
+        l = Listener()
         stream = Stream(auth, l)
         stream.filter(track=[self.hashtag])
         stream.disconnect()
@@ -85,9 +82,9 @@ if __name__ == "__main__":
     vector = socket.recv_json()
     print(vector)
     tiempo = vector[len(vector)-1]
-    StdOutListener.inicio = datetime.now()
-    StdOutListener.limit = float(tiempo)
-    print (StdOutListener.inicio)
+    Listener.inicio = datetime.now()
+    Listener.limit = float(tiempo)
+    print (Listener.inicio)
     with open('Common.json', "a") as f:
         f.close()
     nThreads=len(vector)-1
