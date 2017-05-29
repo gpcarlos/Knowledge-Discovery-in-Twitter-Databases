@@ -45,7 +45,7 @@ def enviar():
     socket.send_json(vector)
 
     if socket.recv_json():
-        ui.label_4.setText(_translate("MainWindow", "Capturado"))
+        ui.label_4.setText(_translate("MainWindow", "¡Capturado!"))
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):

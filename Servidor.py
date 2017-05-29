@@ -61,7 +61,7 @@ class Worker(Thread):
             f.close()
         l = StdOutListener()
         stream = Stream(auth, l)
-        stream.filter(track=self.hashtag)
+        stream.filter(track=[self.hashtag])
         print("Estoy subiendo a Dropbox "+self.hashtag)
         name = current_thread().name+".json"
         print(name)
