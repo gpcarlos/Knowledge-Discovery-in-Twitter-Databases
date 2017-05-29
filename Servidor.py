@@ -38,11 +38,14 @@ class StdOutListener(StreamListener):
         diffmin = diff.total_seconds()/60
         if diffmin<StdOutListener.limit:
             try:
-                with open(namefile, 'a') as f:
-                    #print(data)
-                    f.write(data)
-                    return True
-                    f.close()
+                with open('Common.json', 'a') as fg:
+                    with open(namefile, 'a') as f:
+                        #print(data)
+                        f.write(data)
+                        fg.write(data)
+                        return True
+                        f.close()
+                        fg.close()
             except BaseException as e:
                 print("Error on_data: %s" % str(e))
         else:
@@ -86,7 +89,8 @@ if __name__ == "__main__":
     StdOutListener.inicio = datetime.now()
     StdOutListener.limit = float(tiempo)
     print (StdOutListener.inicio)
-
+    with open('Common.json', "a") as f:
+        f.close()
     nThreads=len(vector)-1
     try:
         q = Queue(nThreads)
@@ -97,4 +101,16 @@ if __name__ == "__main__":
         q.join()
     except:
         print(" ERROR")
+
+    with open('Common.json', "rb") as f:
+        data = f.read()
+        f.close()
+    fname = "/Common.json"
+    try:
+        dbx.files_upload(data, fname, mute=False)
+        print("Subido a Dropbox Common.json")
+    except:
+        print("Error al subir a Dropbox Common.json")
+    os.remove('Common.json')
+
     socket.send_json(vector)
