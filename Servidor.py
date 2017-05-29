@@ -7,12 +7,12 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import re
 import dataset
-import time
+from datetime import datetime
 from threading import Thread, current_thread
 from queue import *
 import zmq
 import json
-
+import os
 import dropbox
 import tempfile
 import shutil
@@ -31,14 +31,22 @@ socket.bind("tcp://127.0.0.1:1024")
 
 class StdOutListener(StreamListener):
     def on_data(self, data):
-        try:
-            namefile=current_thread().name+".json"
-            with open(namefile, 'a') as f:
-                #print(data)
-                f.write(data)
-                return True
-        except BaseException as e:
-            print("Error on_data: %s" % str(e))
+        currenttime = datetime.now()
+        diff = currenttime - StdOutListener.inicio
+        namefile=current_thread().name+".json"
+        #print(namefile+"   "+str(diff.total_seconds()))
+        diffmin = diff.total_seconds()/60
+        if diffmin<StdOutListener.limit:
+            try:
+                with open(namefile, 'a') as f:
+                    #print(data)
+                    f.write(data)
+                    return True
+                    f.close()
+            except BaseException as e:
+                print("Error on_data: %s" % str(e))
+        else:
+            return False
     def on_error(self, status):
         print (status)
 
@@ -48,21 +56,37 @@ class Worker(Thread):
         self.queue=queue
         Thread.__init__(self, name=hashtag)
     def run(self):
+        name = current_thread().name+".json"
+        with open(name, "a") as f:
+            f.close()
         l = StdOutListener()
         stream = Stream(auth, l)
         stream.filter(track=self.hashtag)
-        #self.time.sleep(10) #tiempo en segundos
-        #stream.disconnect()
-        with open("twits.txt", "rb") as f:
+        print("Estoy subiendo a Dropbox "+self.hashtag)
+        name = current_thread().name+".json"
+        print(name)
+        with open(name, "rb") as f:
             data = f.read()
-        fname = "/"+current_thread().name+".json"
-        dbx.files_upload(data, fname, mute=True)
+            f.close()
+        fname = "/"+name
+        print(fname)
+        try:
+            dbx.files_upload(data, fname, mute=False)
+            print("Subido a Dropbox "+self.hashtag)
+        except:
+            print("Error al subir a Dropbox "+self.hashtag)
+        os.remove(name)
         self.queue.task_done()
 
 #MAIN
 vector = socket.recv_json()
 print(vector)
-nThreads=len(vector)
+tiempo = vector[len(vector)-1]
+StdOutListener.inicio = datetime.now()
+StdOutListener.limit = float(tiempo)
+print (StdOutListener.inicio)
+
+nThreads=len(vector)-1
 try:
     q = Queue(nThreads)
     for i in range(nThreads):
@@ -71,4 +95,5 @@ try:
         q.put(t)
     q.join()
 except:
-    print("ERROR")
+    print(" ERROR")
+socket.send_json(vector)
