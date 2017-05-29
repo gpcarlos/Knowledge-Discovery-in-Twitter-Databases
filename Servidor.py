@@ -12,7 +12,7 @@ import os
 import dropbox
 import tempfile
 import shutil
-from TokenDropbox import token
+from Token_Dropbox import token
 from Token_Twitter import consumer_key, consumer_secret, access_key, access_secret
 
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
