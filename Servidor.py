@@ -62,14 +62,15 @@ class Worker(Thread):
         l = StdOutListener()
         stream = Stream(auth, l)
         stream.filter(track=[self.hashtag])
+        stream.disconnect()
         print("Estoy subiendo a Dropbox "+self.hashtag)
         name = current_thread().name+".json"
-        print(name)
+        #print(name)
         with open(name, "rb") as f:
             data = f.read()
             f.close()
         fname = "/"+name
-        print(fname)
+        #print(fname)
         try:
             dbx.files_upload(data, fname, mute=False)
             print("Subido a Dropbox "+self.hashtag)
@@ -78,22 +79,22 @@ class Worker(Thread):
         os.remove(name)
         self.queue.task_done()
 
-#MAIN
-vector = socket.recv_json()
-print(vector)
-tiempo = vector[len(vector)-1]
-StdOutListener.inicio = datetime.now()
-StdOutListener.limit = float(tiempo)
-print (StdOutListener.inicio)
+if __name__ == "__main__":
+    vector = socket.recv_json()
+    print(vector)
+    tiempo = vector[len(vector)-1]
+    StdOutListener.inicio = datetime.now()
+    StdOutListener.limit = float(tiempo)
+    print (StdOutListener.inicio)
 
-nThreads=len(vector)-1
-try:
-    q = Queue(nThreads)
-    for i in range(nThreads):
-        t = Worker(q,vector[i])
-        t.start()
-        q.put(t)
-    q.join()
-except:
-    print(" ERROR")
-socket.send_json(vector)
+    nThreads=len(vector)-1
+    try:
+        q = Queue(nThreads)
+        for i in range(nThreads):
+            t = Worker(q,vector[i])
+            t.start()
+            q.put(t)
+        q.join()
+    except:
+        print(" ERROR")
+    socket.send_json(vector)
