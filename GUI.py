@@ -1,25 +1,18 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'GUI.ui'
-#
-# Created by: PyQt5 UI code generator 5.8.2
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 import zmq
 import json
 import pandas as pd
 import re
+import os
 import matplotlib
 import matplotlib.pyplot as plt
 import dropbox
 import tempfile
 import shutil
 from TokenDropbox import token
+
 dbx = dropbox.Dropbox(token)
 user = dbx.users_get_current_account()
-
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
 socket.connect("tcp://127.0.0.1:1024")
@@ -28,20 +21,37 @@ i = 0
 vector = []
 tiempo = 0.2
 
-def word_in_text(word, text):
-    word = word.lower()
-    text = text.lower()
-    match = re.search(word, text)
+def palabra_en_tweet(palabra, tweet):
+    palabra = palabra.lower()
+    tweet = tweet.lower()
+    match = re.search(palabra, tweet)
     if match:
         return True
     return False
+
+def subir_a_Dropbox(name):
+    with open(name, "rb") as f:
+        data = f.read()
+        f.close()
+    fname = "/"+name
+    try:
+        dbx.files_upload(data, fname, mute=False)
+        print("Subido a Dropbox "+name)
+    except:
+        print("Error al subir a Dropbox "+name)
+
+def descargar_de_Dropbox(name):
+    path = "/"+name
+    file_temp = open(name,"a")
+    dbx.files_download_to_file(file_temp.name, path)
+    print("Descarga Finalizada "+name)
 
 def annadir():
     global i
     i=i+1
     text = ui.lineEdit.text()
     vector.append(text)
-    print(vector)
+    #print(vector)
     _translate = QtCore.QCoreApplication.translate
     str1="Añadido: "+text
     str2="Total de terminos añadidos: "+str(i)
@@ -61,9 +71,9 @@ def capturar():
     ui.label_4.repaint()
     vector.append(tiempo)
     socket.send_json(vector)
-
     if socket.recv_json():
         ui.label_4.setText(_translate("MainWindow", "¡Capturado!"))
+    vector.pop()
 
 def procesar():
     for i in range(len(vector)-1):
@@ -71,20 +81,16 @@ def procesar():
         ui.label_4.setText(_translate("MainWindow", "Descargando .json..."))
         ui.label_4.repaint()
         name = str(vector[i])+".json"
-        path = "/"+name
-        file_temp = open(name,"a")
-        dbx.files_download_to_file(file_temp.name, path)
-        print("Descarga Finalizada "+name)
-    path = "/Common.json"
-    file_temp = open('Common.json',"a")
-    dbx.files_download_to_file(file_temp.name, path)
-    print("Descarga Finalizada Common.json")
-    ui.label_4.setText(_translate("MainWindow", "¡Descargando!"))
+        descargar_de_Dropbox(name)
+    descargar_de_Dropbox('Common.json')
+
+    ui.label_4.setText(_translate("MainWindow", "Creando .xls..."))
+    ui.label_4.repaint()
 
     for i in range(len(vector)-1):
-        tweets_dir = str(vector[i])+".json"
+        name = str(vector[i])+".json"
         tweets_data = []
-        tweets_file = open(tweets_dir, "r")
+        tweets_file = open(name, "r")
         for line in tweets_file:
             try:
                 tweet = json.loads(line)
@@ -95,22 +101,19 @@ def procesar():
                 tweets_data.append(tweet)
             except:
                 continue
-
-        print (len(tweets_data))
-
         tweets = pd.DataFrame()
-
         tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
         tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
         tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
         tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
+        name = str(vector[i])+'.xls'
+        tweets.to_excel(name)
+        subir_a_Dropbox(name)
+        os.remove(name)
 
-        tweets_dir = str(vector[i])+'.xls'
-        tweets.to_excel(tweets_dir)
-
-    tweets_dir = "Common.json"
+    name = "Common.json"
     tweets_data = []
-    tweets_file = open(tweets_dir, "r")
+    tweets_file = open(name, "r")
     for line in tweets_file:
         try:
             tweet = json.loads(line)
@@ -121,25 +124,24 @@ def procesar():
             tweets_data.append(tweet)
         except:
             continue
-
-    print (len(tweets_data))
-
     tweets = pd.DataFrame()
-
     tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
     tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
     tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
     tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
+    tweets.to_excel('Common.xls')
+    subir_a_Dropbox('Common.xls')
+    os.remove('Common.xls')
 
-    tweets_dir = 'Common.xls'
-    tweets.to_excel(tweets_dir)
+    ui.label_4.setText(_translate("MainWindow", "¡Listo!"))
+    ui.label_4.repaint()
 
     Dialog.show()
 
 def impacto():
-    tweets_dir = "Common.json"
+    name = "Common.json"
     tweets_data = []
-    tweets_file = open(tweets_dir, "r")
+    tweets_file = open(name, "r")
     for line in tweets_file:
         try:
             tweet = json.loads(line)
@@ -150,19 +152,12 @@ def impacto():
             tweets_data.append(tweet)
         except:
             continue
-    print (len(tweets_data))
     tweets = pd.DataFrame()
     tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
-    tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
-    tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
-    tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
 
     busqueda=vector
-    busqueda.pop()
     for cadena in busqueda:
-        tweets[cadena] = tweets['text'].apply(lambda tweet: word_in_text(cadena,tweet))
-    tweets_dir = 'Impactos.xls'
-    tweets.to_excel(tweets_dir)
+        tweets[cadena] = tweets['text'].apply(lambda tweet: palabra_en_tweet(cadena,tweet))
     labels=busqueda
     tweets_impactos = []
     for cadena in busqueda:
@@ -179,45 +174,14 @@ def impacto():
     plt.legend(loc='best')
     plt.show()
 
-
     fig.savefig('GraficaImpactos.png', dpi=fig.dpi*4)
-
+    subir_a_Dropbox('GraficaImpactos.png')
+    os.remove('GraficaImpactos.png')
 
 def idiomas():
-        tweets_dir = "Common.json"
-        tweets_data = []
-        tweets_file = open(tweets_dir, "r")
-        for line in tweets_file:
-            try:
-                tweet = json.loads(line)
-                tweet['source'] = tweet['source'].split('"nofollow">',1)[1]
-                tweet['source'] = tweet['source'][:-4]
-                if tweet['lang']=='und':
-                    tweet['lang'] = 'No definido'
-                tweets_data.append(tweet)
-            except:
-                continue
-
-        print (len(tweets_data))
-
-        tweets = pd.DataFrame()
-        tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
-        tweets_idioma = tweets['lang'].value_counts()
-
-        fig, ax = plt.subplots()
-        ax.tick_params(axis='x', labelsize=12)
-        ax.tick_params(axis='y', labelsize=12)
-        ax.set_title('Idiomas', fontsize=15, fontweight='bold')
-        tweets_idioma[:5].plot.pie(label='',autopct='%.1f%%')
-        plt.axis('equal')
-        plt.tight_layout()
-        plt.show()
-        print(fig.dpi)
-        fig.savefig('GraficaIdioma.png', dpi=fig.dpi*4)
-def medios():
-    tweets_dir = "Common.json"
+    name = "Common.json"
     tweets_data = []
-    tweets_file = open(tweets_dir, "r")
+    tweets_file = open(name, "r")
     for line in tweets_file:
         try:
             tweet = json.loads(line)
@@ -228,16 +192,42 @@ def medios():
             tweets_data.append(tweet)
         except:
             continue
-    print (len(tweets_data))
     tweets = pd.DataFrame()
-    tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
     tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
-    tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
+
+    tweets_idioma = tweets['lang'].value_counts()
+    fig, ax = plt.subplots()
+    ax.tick_params(axis='x', labelsize=12)
+    ax.tick_params(axis='y', labelsize=12)
+    ax.set_title('Idiomas', fontsize=15, fontweight='bold')
+    tweets_idioma[:5].plot.pie(label='',autopct='%.1f%%')
+    plt.axis('equal')
+    plt.tight_layout()
+    plt.show()
+    print(fig.dpi)
+
+    fig.savefig('GraficaIdioma.png', dpi=fig.dpi*4)
+    subir_a_Dropbox('GraficaIdioma.png')
+    os.remove('GraficaIdioma.png')
+
+def medios():
+    name = "Common.json"
+    tweets_data = []
+    tweets_file = open(name, "r")
+    for line in tweets_file:
+        try:
+            tweet = json.loads(line)
+            tweet['source'] = tweet['source'].split('"nofollow">',1)[1]
+            tweet['source'] = tweet['source'][:-4]
+            if tweet['lang']=='und':
+                tweet['lang'] = 'No definido'
+            tweets_data.append(tweet)
+        except:
+            continue
+    tweets = pd.DataFrame()
     tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
 
     tweets_source = tweets['source'].value_counts()
-    tweets_dir = 'Medio.xls'
-    tweets.to_excel(tweets_dir)
     fig, ax = plt.subplots()
     ax.tick_params(axis='x', labelsize=12)
     ax.tick_params(axis='y', labelsize=12)
@@ -245,7 +235,10 @@ def medios():
     tweets_source[:5].plot.pie(label='',autopct='%.1f%%')
     plt.axis('equal')
     plt.show()
+
     fig.savefig('GraficaMedio.png', dpi=fig.dpi*4)
+    subir_a_Dropbox('GraficaMedio.png')
+    os.remove('GraficaMedio.png')
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
