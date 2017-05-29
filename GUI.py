@@ -16,6 +16,7 @@ socket.connect("tcp://127.0.0.1:1024")
 
 i = 0
 vector = []
+tiempo = 0.2
 
 def annadir():
     global i
@@ -24,15 +25,23 @@ def annadir():
     vector.append(text)
     print(vector)
     _translate = QtCore.QCoreApplication.translate
-    str1="Último añadido: "+text
-    str2="Total Hashtags añadidos: "+str(i)
+    str1="Añadido: "+text
+    str2="Total de terminos añadidos: "+str(i)
     ui.label_4.setText(_translate("MainWindow", str1))
     ui.label_3.setText(_translate("MainWindow", str2))
+
+def annadirT():
+    global tiempo
+    tiempo = ui.lineEdit_2.text()
+    str="Tiempo: "+tiempo+" min"
+    _translate = QtCore.QCoreApplication.translate
+    ui.label_4.setText(_translate("MainWindow", str))
 
 def enviar():
     _translate = QtCore.QCoreApplication.translate
     ui.label_4.setText(_translate("MainWindow", "Capturando..."))
-
+    ui.label_4.repaint()
+    vector.append(tiempo)
     socket.send_json(vector)
 
     if socket.recv_json():
@@ -81,7 +90,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily("Droid Sans")
         self.lineEdit_2.setFont(font)
-        self.lineEdit_2.setText("")
+        self.lineEdit_2.setText(str(tiempo))
         self.lineEdit_2.setObjectName("lineEdit_2")
         self.pushButton_2.clicked.connect(enviar)
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -92,6 +101,7 @@ class Ui_MainWindow(object):
         self.label.setObjectName("label")
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_4.setGeometry(QtCore.QRect(270, 100, 86, 33))
+        self.pushButton_4.clicked.connect(annadirT)
         font = QtGui.QFont()
         font.setFamily("Droid Sans")
         self.pushButton_4.setFont(font)
