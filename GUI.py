@@ -155,22 +155,22 @@ def impacto():
     tweets = pd.DataFrame()
     tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
 
-    busqueda=vector
-    for cadena in busqueda:
+    aux=vector
+    for cadena in aux:
         tweets[cadena] = tweets['text'].apply(lambda tweet: palabra_en_tweet(cadena,tweet))
-    labels=busqueda
+
     tweets_impactos = []
-    for cadena in busqueda:
+    for cadena in aux:
         tweets_impactos.append(sum(tweets[cadena]))
-    x_pos = list(range(len(labels)))
+    x_pos = list(range(len(aux)))
     width = 0.75
     fig, ax = plt.subplots()
-    for i in range(0,len(labels)):
+    for i in range(0,len(aux)):
         plt.bar(x_pos[i], tweets_impactos[i], width)
-    ax.set_ylabel('Número de twits', fontsize=12)
+    ax.set_ylabel('Número de tweets', fontsize=12)
     ax.set_title('Ránking de Impactos', fontsize=15)
     ax.set_xticks([p +0.05 * width for p in x_pos])
-    ax.set_xticklabels(labels)
+    ax.set_xticklabels(aux)
     plt.legend(loc='best')
     plt.show()
 
@@ -204,7 +204,6 @@ def idiomas():
     plt.axis('equal')
     plt.tight_layout()
     plt.show()
-    print(fig.dpi)
 
     fig.savefig('GraficaIdioma.png', dpi=fig.dpi*4)
     subir_a_Dropbox('GraficaIdioma.png')
@@ -333,7 +332,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Trabajo Final SD"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Knowledge Discovery in Twitter's  Databases"))
         self.lineEdit.setToolTip(_translate("MainWindow", "<html><head/><body><p>Añada aquí los términos de uno en uno</p><p><br/></p></body></html>"))
         self.pushButton.setText(_translate("MainWindow", "Añadir"))
         self.label_3.setText(_translate("MainWindow", "Total de terminos añadidos: "))

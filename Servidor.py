@@ -14,6 +14,7 @@ import tempfile
 import shutil
 from TokenDropbox import token
 from Token_Twitter import consumer_key, consumer_secret, access_key, access_secret
+
 auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 auth.set_access_token(access_key, access_secret)
 api = tweepy.API(auth)
@@ -22,6 +23,17 @@ user = dbx.users_get_current_account()
 context = zmq.Context()
 socket = context.socket(zmq.REP)
 socket.bind("tcp://127.0.0.1:1024")
+
+def subir_a_Dropbox(name):
+    with open(name, "rb") as f:
+        data = f.read()
+        f.close()
+    fname = "/"+name
+    try:
+        dbx.files_upload(data, fname, mute=False)
+        print("Subido a Dropbox "+name)
+    except:
+        print("Error al subir a Dropbox "+name)
 
 class Listener(StreamListener):
     def on_data(self, data):
@@ -60,21 +72,8 @@ class Worker(Thread):
         stream = Stream(auth, l)
         stream.filter(track=[self.hashtag])
         stream.disconnect()
-        print("Estoy subiendo a Dropbox "+self.hashtag)
         name = current_thread().name+".json"
-        #print(name)
-        with open(name, "rb") as f:
-            data = f.read()
-            f.close()
-        fname = "/"+name
-
-        #print(fname)
-        try:
-            dbx.files_upload(data, fname, mute=False)
-            print("Subido a Dropbox "+self.hashtag)
-        except:
-            print("Error al subir a Dropbox "+self.hashtag)
-
+        subir_a_Dropbox(name)
         os.remove(name)
         self.queue.task_done()
 
@@ -84,7 +83,7 @@ if __name__ == "__main__":
     tiempo = vector[len(vector)-1]
     Listener.inicio = datetime.now()
     Listener.limit = float(tiempo)
-    print (Listener.inicio)
+    #print (Listener.inicio)
     with open('Common.json', "a") as f:
         f.close()
     nThreads=len(vector)-1
@@ -98,15 +97,7 @@ if __name__ == "__main__":
     except:
         print(" ERROR")
 
-    with open('Common.json', "rb") as f:
-        data = f.read()
-        f.close()
-    fname = "/Common.json"
-    try:
-        dbx.files_upload(data, fname, mute=False)
-        print("Subido a Dropbox Common.json")
-    except:
-        print("Error al subir a Dropbox Common.json")
+    subir_a_Dropbox('Common.json')
     os.remove('Common.json')
 
     socket.send_json(vector)
