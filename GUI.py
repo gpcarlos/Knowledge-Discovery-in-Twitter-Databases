@@ -9,7 +9,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import zmq
 import json
-
+import pandas as pd
+import re
+import matplotlib
+import matplotlib.pyplot as plt
 import dropbox
 import tempfile
 import shutil
@@ -24,6 +27,14 @@ socket.connect("tcp://127.0.0.1:1024")
 i = 0
 vector = []
 tiempo = 0.2
+
+def word_in_text(word, text):
+    word = word.lower()
+    text = text.lower()
+    match = re.search(word, text)
+    if match:
+        return True
+    return False
 
 def annadir():
     global i
@@ -70,7 +81,171 @@ def procesar():
     print("Descarga Finalizada Common.json")
     ui.label_4.setText(_translate("MainWindow", "¡Descargando!"))
 
+    for i in range(len(vector)-1):
+        tweets_dir = str(vector[i])+".json"
+        tweets_data = []
+        tweets_file = open(tweets_dir, "r")
+        for line in tweets_file:
+            try:
+                tweet = json.loads(line)
+                tweet['source'] = tweet['source'].split('"nofollow">',1)[1]
+                tweet['source'] = tweet['source'][:-4]
+                if tweet['lang']=='und':
+                    tweet['lang'] = 'No definido'
+                tweets_data.append(tweet)
+            except:
+                continue
+
+        print (len(tweets_data))
+
+        tweets = pd.DataFrame()
+
+        tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
+        tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
+        tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
+        tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
+
+        tweets_dir = str(vector[i])+'.xls'
+        tweets.to_excel(tweets_dir)
+
+    tweets_dir = "Common.json"
+    tweets_data = []
+    tweets_file = open(tweets_dir, "r")
+    for line in tweets_file:
+        try:
+            tweet = json.loads(line)
+            tweet['source'] = tweet['source'].split('"nofollow">',1)[1]
+            tweet['source'] = tweet['source'][:-4]
+            if tweet['lang']=='und':
+                tweet['lang'] = 'No definido'
+            tweets_data.append(tweet)
+        except:
+            continue
+
+    print (len(tweets_data))
+
+    tweets = pd.DataFrame()
+
+    tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
+    tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
+    tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
+    tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
+
+    tweets_dir = 'Common.xls'
+    tweets.to_excel(tweets_dir)
+
     Dialog.show()
+
+def impacto():
+    tweets_dir = "Common.json"
+    tweets_data = []
+    tweets_file = open(tweets_dir, "r")
+    for line in tweets_file:
+        try:
+            tweet = json.loads(line)
+            tweet['source'] = tweet['source'].split('"nofollow">',1)[1]
+            tweet['source'] = tweet['source'][:-4]
+            if tweet['lang']=='und':
+                tweet['lang'] = 'No definido'
+            tweets_data.append(tweet)
+        except:
+            continue
+    print (len(tweets_data))
+    tweets = pd.DataFrame()
+    tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
+    tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
+    tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
+    tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
+
+    busqueda=vector
+    busqueda.pop()
+    for cadena in busqueda:
+        tweets[cadena] = tweets['text'].apply(lambda tweet: word_in_text(cadena,tweet))
+    tweets_dir = 'Impactos.xls'
+    tweets.to_excel(tweets_dir)
+    labels=busqueda
+    tweets_impactos = []
+    for cadena in busqueda:
+        tweets_impactos.append(sum(tweets[cadena]))
+    x_pos = list(range(len(labels)))
+    width = 0.75
+    fig, ax = plt.subplots()
+    for i in range(0,len(labels)):
+        plt.bar(x_pos[i], tweets_impactos[i], width)
+    ax.set_ylabel('Número de twits', fontsize=12)
+    ax.set_title('Ránking de Impactos', fontsize=15)
+    ax.set_xticks([p +0.05 * width for p in x_pos])
+    ax.set_xticklabels(labels)
+    plt.legend(loc='best')
+    plt.show()
+
+
+    fig.savefig('GraficaImpactos.png', dpi=fig.dpi*4)
+
+
+def idiomas():
+        tweets_dir = "Common.json"
+        tweets_data = []
+        tweets_file = open(tweets_dir, "r")
+        for line in tweets_file:
+            try:
+                tweet = json.loads(line)
+                tweet['source'] = tweet['source'].split('"nofollow">',1)[1]
+                tweet['source'] = tweet['source'][:-4]
+                if tweet['lang']=='und':
+                    tweet['lang'] = 'No definido'
+                tweets_data.append(tweet)
+            except:
+                continue
+
+        print (len(tweets_data))
+
+        tweets = pd.DataFrame()
+        tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
+        tweets_idioma = tweets['lang'].value_counts()
+
+        fig, ax = plt.subplots()
+        ax.tick_params(axis='x', labelsize=12)
+        ax.tick_params(axis='y', labelsize=12)
+        ax.set_title('Idiomas', fontsize=15, fontweight='bold')
+        tweets_idioma[:5].plot.pie(label='',autopct='%.1f%%')
+        plt.axis('equal')
+        plt.tight_layout()
+        plt.show()
+        print(fig.dpi)
+        fig.savefig('GraficaIdioma.png', dpi=fig.dpi*4)
+def medios():
+    tweets_dir = "Common.json"
+    tweets_data = []
+    tweets_file = open(tweets_dir, "r")
+    for line in tweets_file:
+        try:
+            tweet = json.loads(line)
+            tweet['source'] = tweet['source'].split('"nofollow">',1)[1]
+            tweet['source'] = tweet['source'][:-4]
+            if tweet['lang']=='und':
+                tweet['lang'] = 'No definido'
+            tweets_data.append(tweet)
+        except:
+            continue
+    print (len(tweets_data))
+    tweets = pd.DataFrame()
+    tweets['text'] = list(map(lambda tweet: tweet['text'], tweets_data))
+    tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
+    tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
+    tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
+
+    tweets_source = tweets['source'].value_counts()
+    tweets_dir = 'Medio.xls'
+    tweets.to_excel(tweets_dir)
+    fig, ax = plt.subplots()
+    ax.tick_params(axis='x', labelsize=12)
+    ax.tick_params(axis='y', labelsize=12)
+    ax.set_title('Medio', fontsize=15)
+    tweets_source[:5].plot.pie(label='',autopct='%.1f%%')
+    plt.axis('equal')
+    plt.show()
+    fig.savefig('GraficaMedio.png', dpi=fig.dpi*4)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -185,12 +360,15 @@ class Ui_Dialog(object):
         self.pushButton = QtWidgets.QPushButton(Dialog)
         self.pushButton.setGeometry(QtCore.QRect(10, 20, 151, 29))
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(impacto)
         self.pushButton_2 = QtWidgets.QPushButton(Dialog)
         self.pushButton_2.setGeometry(QtCore.QRect(10, 70, 151, 29))
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.clicked.connect(idiomas)
         self.pushButton_3 = QtWidgets.QPushButton(Dialog)
         self.pushButton_3.setGeometry(QtCore.QRect(10, 120, 151, 29))
         self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_3.clicked.connect(medios)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)

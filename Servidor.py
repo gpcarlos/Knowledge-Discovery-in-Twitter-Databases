@@ -1,11 +1,8 @@
 import tweepy
-import pandas as pd
-import matplotlib
-import matplotlib.pyplot as plt
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
-import re
+
 import dataset
 from datetime import datetime
 from threading import Thread, current_thread
@@ -73,12 +70,14 @@ class Worker(Thread):
             data = f.read()
             f.close()
         fname = "/"+name
+
         #print(fname)
         try:
             dbx.files_upload(data, fname, mute=False)
             print("Subido a Dropbox "+self.hashtag)
         except:
             print("Error al subir a Dropbox "+self.hashtag)
+
         os.remove(name)
         self.queue.task_done()
 
