@@ -76,7 +76,7 @@ def capturar():
     vector.pop()
 
 def procesar():
-    for i in range(len(vector)-1):
+    for i in range(len(vector)):
         _translate = QtCore.QCoreApplication.translate
         ui.label_4.setText(_translate("MainWindow", "Descargando .json..."))
         ui.label_4.repaint()
@@ -87,7 +87,7 @@ def procesar():
     ui.label_4.setText(_translate("MainWindow", "Creando .xls..."))
     ui.label_4.repaint()
 
-    for i in range(len(vector)-1):
+    for i in range(len(vector)):
         name = str(vector[i])+".json"
         tweets_data = []
         tweets_file = open(name, "r")

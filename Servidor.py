@@ -35,20 +35,20 @@ def subir_a_Dropbox(name):
     except:
         print("Error al subir a Dropbox "+name)
 
-def gestiona_datos(term, queue):
+def Worker(term, queue):
     print("Escucho para el término '%s'" %term)
     while True:
         dato = queue.get()
 
         if dato == '0':
-            print("Debo salir")
+            #print("Debo salir")
             return
         else:
-            print("Imprimiendo en: "+term+".txt")
-            with open("%s.txt" % term, "a") as file:
+            print("Imprimiendo en: "+term+".json")
+            with open("%s.json" % term, "a") as file:
                 file.write(dato)
-            print("Imprimiendo en common.txt")
-            with open("common.txt", "a") as file:
+            #print("Imprimiendo en Common.json")
+            with open("Common.json", "a") as file:
                 file.write(dato)
 
 class Listener(StreamListener):
@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     for term in vector:
         queues[term] = Queue()
-        procs.append(Thread(target=gestiona_datos, args=(term, queues[term])).start())
+        procs.append(Thread(target=Worker, args=(term, queues[term])).start())
 
     l = Listener(queues)
     stream = Stream(auth, l)
@@ -99,5 +99,16 @@ if __name__ == "__main__":
 
     for term in vector:
         queues[term].put('0', False)
+        name=str(term)+".json"
+        with open(name,'a') as f:
+            f.close()
 
+    #print("HAN TERMINADO")
+
+    for term in vector:
+        name=str(term)+".json"
+        subir_a_Dropbox(name)
+        os.remove(name)
+    subir_a_Dropbox("Common.json")
+    os.remove("Common.json")
     socket.send_json(vector)
