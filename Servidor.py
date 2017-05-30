@@ -44,8 +44,11 @@ def gestiona_datos(term, queue):
             print("Debo salir")
             return
         else:
-            print("imprimiendo en"+term)
+            print("Imprimiendo en: "+term+".txt")
             with open("%s.txt" % term, "a") as file:
+                file.write(dato)
+            print("Imprimiendo en common.txt")
+            with open("common.txt", "a") as file:
                 file.write(dato)
 
 class Listener(StreamListener):
@@ -64,8 +67,6 @@ class Listener(StreamListener):
                     str23=json.loads(dato)['text']
                     if term in str23:
                         self.queues[term].put(dato, False)
-                        with open("common.txt", "a") as file:
-                            file.write(dato)
 
                 #print("Recibo dato %s" % dato)
 
