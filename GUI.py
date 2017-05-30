@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import dropbox
 import tempfile
 import shutil
+''' IMPORTACIÓN DE TOKEN '''
 from Token_Dropbox import token
 
 dbx = dropbox.Dropbox(token)
@@ -32,19 +33,18 @@ def palabra_en_tweet(palabra, tweet):
 def subir_a_Dropbox(name):
     with open(name, "rb") as f:
         data = f.read()
-        f.close()
-    fname = "/"+name
+    fname = "/%s"% name
     try:
         dbx.files_upload(data, fname, mute=False)
-        print("Subido a Dropbox "+name)
+        print("Subido a Dropbox %s"% name)
     except:
-        print("Error al subir a Dropbox "+name)
+        print("Error al subir a Dropbox %s"% name)
 
 def descargar_de_Dropbox(name):
-    path = "/"+name
+    path = "/%s"% name
     file_temp = open(name,"a")
     dbx.files_download_to_file(file_temp.name, path)
-    print("Descarga Finalizada "+name)
+    print("Descarga finalizada %s"% name)
 
 def annadir():
     global i
@@ -53,15 +53,15 @@ def annadir():
     vector.append(text)
     #print(vector)
     _translate = QtCore.QCoreApplication.translate
-    str1="Añadido: "+text
-    str2="Total de terminos añadidos: "+str(i)
+    str1="Añadido: %s"% text
+    str2="Total de terminos añadidos: %s"% str(i)
     ui.label_4.setText(_translate("MainWindow", str1))
     ui.label_3.setText(_translate("MainWindow", str2))
 
 def annadirT():
     global tiempo
     tiempo = ui.lineEdit_2.text()
-    str="Tiempo: "+tiempo+" min"
+    str="Tiempo: %s min"% tiempo
     _translate = QtCore.QCoreApplication.translate
     ui.label_4.setText(_translate("MainWindow", str))
 
@@ -80,7 +80,7 @@ def procesar():
         _translate = QtCore.QCoreApplication.translate
         ui.label_4.setText(_translate("MainWindow", "Descargando .json..."))
         ui.label_4.repaint()
-        name = str(vector[i])+".json"
+        name = "%s.json"% str(vector[i])
         descargar_de_Dropbox(name)
     descargar_de_Dropbox('Common.json')
 
@@ -106,7 +106,7 @@ def procesar():
         tweets['lang'] = list(map(lambda tweet: tweet['lang'], tweets_data))
         tweets['country'] = list(map(lambda tweet: tweet['place']['country'] if tweet['place'] != None else 'Undefined', tweets_data))
         tweets['source'] = list(map(lambda tweet: tweet['source'], tweets_data))
-        name = str(vector[i])+'.xls'
+        name = "%s.xls"% str(vector[i])
         tweets.to_excel(name)
         subir_a_Dropbox(name)
         os.remove(name)
@@ -135,7 +135,6 @@ def procesar():
 
     ui.label_4.setText(_translate("MainWindow", "¡Listo!"))
     ui.label_4.repaint()
-
     Dialog.show()
 
 def impacto():
@@ -361,7 +360,6 @@ class Ui_Dialog(object):
         self.pushButton_3.setGeometry(QtCore.QRect(10, 120, 151, 29))
         self.pushButton_3.setObjectName("pushButton_3")
         self.pushButton_3.clicked.connect(medios)
-
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
