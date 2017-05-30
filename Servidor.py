@@ -35,69 +35,68 @@ def subir_a_Dropbox(name):
     except:
         print("Error al subir a Dropbox "+name)
 
+def gestiona_datos(term, queue):
+    print("Escucho para el término '%s'" %term)
+    while True:
+        dato = queue.get()
+
+        if dato == '0':
+            print("Debo salir")
+            return
+        else:
+            print("imprimiendo en"+term)
+            with open("%s.txt" % term, "a") as file:
+                file.write(dato)
+
 class Listener(StreamListener):
-    def on_data(self, data):
+    def __init__(self, queues):
+        self.queues = queues
+        self.terms = queues.keys()
+
+    def on_data(self, dato):
         currenttime = datetime.now()
         diff = currenttime - Listener.inicio
-        namefile=current_thread().name+".json"
-        #print(namefile+"   "+str(diff.total_seconds()))
+        #print(str(diff.total_seconds()))
         diffmin = diff.total_seconds()/60
         if diffmin<Listener.limit:
             try:
-                with open('Common.json', 'a') as fg:
-                    with open(namefile, 'a') as f:
-                        #print(data)
-                        f.write(data)
-                        fg.write(data)
-                        return True
-                        f.close()
-                        fg.close()
+                for term in self.queues.keys():
+                    str23=json.loads(dato)['text']
+                    if term in str23:
+                        self.queues[term].put(dato, False)
+                        with open("common.txt", "a") as file:
+                            file.write(dato)
+
+                #print("Recibo dato %s" % dato)
+
             except BaseException as e:
                 print("Error on_data: %s" % str(e))
+                #print("Recibo dato %s" % json.loads(dato)['text'])
         else:
             return False
     def on_error(self, status):
         print (status)
 
-class Worker(Thread):
-    def __init__(self, queue, hashtag):
-        self.hashtag=hashtag
-        self.queue=queue
-        Thread.__init__(self, name=hashtag)
-    def run(self):
-        name = current_thread().name+".json"
-        with open(name, "a") as f:
-            f.close()
-        l = Listener()
-        stream = Stream(auth, l)
-        stream.filter(track=[self.hashtag])
-        stream.disconnect()
-        name = current_thread().name+".json"
-        subir_a_Dropbox(name)
-        os.remove(name)
-        self.queue.task_done()
-
 if __name__ == "__main__":
     vector = socket.recv_json()
     print(vector)
     tiempo = vector[len(vector)-1]
+    vector.pop()
     Listener.inicio = datetime.now()
     Listener.limit = float(tiempo)
     #print (Listener.inicio)
-    with open('Common.json', "a") as f:
-        f.close()
-    nThreads=len(vector)-1
-    try:
-        q = Queue(nThreads)
-        for i in range(nThreads):
-            t = Worker(q,vector[i])
-            t.start()
-            q.put(t)
-        q.join()
-    except:
-        print(" ERROR")
+    queues = {}
+    procs = []
 
-    subir_a_Dropbox('Common.json')
-    os.remove('Common.json')
+    for term in vector:
+        queues[term] = Queue()
+        procs.append(Thread(target=gestiona_datos, args=(term, queues[term])).start())
+
+    l = Listener(queues)
+    stream = Stream(auth, l)
+    stream.filter(track=vector)
+
+    for term in vector:
+        queues[term].put('0', False)
 
     socket.send_json(vector)
