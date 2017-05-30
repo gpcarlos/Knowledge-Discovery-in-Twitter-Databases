@@ -44,14 +44,11 @@ class Listener(StreamListener):
         diffmin = diff.total_seconds()/60
         if diffmin<Listener.limit:
             try:
-                with open('Common.json', 'a') as fg:
-                    with open(namefile, 'a') as f:
-                        #print(data)
-                        f.write(data)
-                        fg.write(data)
-                        return True
-                        f.close()
-                        fg.close()
+                with open('Common.json', 'a') as f:
+                    f.write(data)
+                with open(namefile, 'a') as f:
+                    f.write(data)
+                return True
             except BaseException as e:
                 print("Error on_data: %s" % str(e))
         else:
