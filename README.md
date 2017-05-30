@@ -1,16 +1,16 @@
 # Trabajo-Final-SD
 Trabajo final de la asignatura Sistemas Distribuidos.
 
-#Miembros del grupo:
+## Miembros del grupo:
   · Juan Francisco Cabrera Sánchez
   · Carlos Gallardo Polanco
 
-#Descripción:
+## Descripción:
   El programa ofrece diferentes estadísticas y archivos .xls en base a los
   tweets encontrados en un periodo de tiempo, basados en los términos
   introducidos por el usuario.
 
-#¿Cómo ejecutarlo?
+## ¿Cómo ejecutarlo?
   Antes de nada, descargue sus tokens de Dropbox y Twitter.
   Almacenelos en los ficheros Token_Dropbox.py y Token_Twitter.py
   en el mismo directorio y de la siguiente forma:
@@ -29,10 +29,14 @@ Trabajo final de la asignatura Sistemas Distribuidos.
       ----------------------
 
   Una vez hecho ésto ejecute el servidor:
+    '''
     $ python Servidor.py
+    '''
 
   Luego el cliente:
+    '''
     $ python Cliente.py
+    '''
 
   Tras esto, introduzca los términos que quiera uno a uno y pulsando 'Añadir'.
   Haga lo mismo con el tiempo en minutos (por defecto está a 0.2 minutos).
