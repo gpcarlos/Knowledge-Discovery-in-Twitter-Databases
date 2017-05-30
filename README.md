@@ -2,8 +2,8 @@
 Trabajo final de la asignatura Sistemas Distribuidos.
 
 ## Miembros del grupo:
-  · Juan Francisco Cabrera Sánchez
-  · Carlos Gallardo Polanco
+  - Juan Francisco Cabrera Sánchez
+  - Carlos Gallardo Polanco
 
 ## Descripción:
   El programa ofrece diferentes estadísticas y archivos .xls en base a los
@@ -29,14 +29,14 @@ Trabajo final de la asignatura Sistemas Distribuidos.
       ----------------------
 
   Una vez hecho ésto ejecute el servidor:
-    '''
+    ```
     $ python Servidor.py
-    '''
+    ```
 
   Luego el cliente:
-    '''
+    ```
     $ python Cliente.py
-    '''
+    ```
 
   Tras esto, introduzca los términos que quiera uno a uno y pulsando 'Añadir'.
   Haga lo mismo con el tiempo en minutos (por defecto está a 0.2 minutos).
