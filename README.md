@@ -1,4 +1,5 @@
 # Trabajo-Final-SD
+### Knowledge Discovery in Twitter's  Databases
 Trabajo final de la asignatura Sistemas Distribuidos.
 
 ## Miembros del grupo:
@@ -25,7 +26,7 @@ Trabajo final de la asignatura Sistemas Distribuidos.
 
       Contenido de Token_Dropbox.py:
       ----------------------
-      token=' añada aqui los token correspondientes '
+      token = ' añada aqui los token correspondientes '
       ----------------------
 
   Una vez hecho ésto ejecute el servidor:
