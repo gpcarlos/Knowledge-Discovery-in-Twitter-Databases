@@ -49,3 +49,7 @@ Trabajo final de la asignatura Sistemas Distribuidos.
 
   Tras esto encontrará en Dropbox los archivos .json .xls y .png de las
   gráficas que haya seleccionado.
+
+### ¡Cuidado!
+
+  Para que todo funcione correctamente, cada vez que quiera probar el programa debe asegurarse de que la carpeta de Dropbox en la que se suben los archivos está vacía y que ha borrado los .json que pueda haber en la carpeta en la que está Cliente.py. En caso contrario se pueden mezclar los tweets nuevos con tweets antiguos.
