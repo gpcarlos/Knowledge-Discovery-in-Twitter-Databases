@@ -104,3 +104,4 @@ ENV/
 *.png
 *.xls
 *.json
+Token*
