@@ -11,6 +11,8 @@ Trabajo final de la asignatura Sistemas Distribuidos.
   tweets encontrados en un periodo de tiempo, basados en los términos
   introducidos por el usuario.
 
+![Preview](/Screen.png)
+
 ## ¿Cómo ejecutarlo?
   Antes de nada, descargue sus tokens de Dropbox y Twitter.
   Almacenelos en los ficheros Token_Dropbox.py y Token_Twitter.py

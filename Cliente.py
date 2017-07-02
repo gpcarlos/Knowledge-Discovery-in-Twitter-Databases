@@ -171,11 +171,12 @@ def impacto():
     ax.set_xticks([p +0.05 * width for p in x_pos])
     ax.set_xticklabels(aux)
     plt.legend(loc='best')
-    plt.show()
 
     fig.savefig('GraficaImpactos.png', dpi=fig.dpi*4)
     subir_a_Dropbox('GraficaImpactos.png')
     os.remove('GraficaImpactos.png')
+
+    plt.show()
 
 def idiomas():
     name = "Common.json"
@@ -202,11 +203,12 @@ def idiomas():
     tweets_idioma[:5].plot.pie(label='',autopct='%.1f%%')
     plt.axis('equal')
     plt.tight_layout()
-    plt.show()
 
     fig.savefig('GraficaIdioma.png', dpi=fig.dpi*4)
     subir_a_Dropbox('GraficaIdioma.png')
     os.remove('GraficaIdioma.png')
+
+    plt.show()
 
 def medios():
     name = "Common.json"
@@ -232,11 +234,12 @@ def medios():
     ax.set_title('Medio', fontsize=15)
     tweets_source[:5].plot.pie(label='',autopct='%.1f%%')
     plt.axis('equal')
-    plt.show()
 
     fig.savefig('GraficaMedio.png', dpi=fig.dpi*4)
     subir_a_Dropbox('GraficaMedio.png')
     os.remove('GraficaMedio.png')
+    
+    plt.show()
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
