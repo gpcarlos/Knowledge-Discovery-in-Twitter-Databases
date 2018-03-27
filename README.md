@@ -3,8 +3,8 @@
 Trabajo final de la asignatura Sistemas Distribuidos.
 
 ## Miembros del grupo:
-  - Juan Francisco Cabrera Sánchez
-  - Carlos Gallardo Polanco
+- **Juan Francisco Cabrera Sánchez** - *Github profile* - [JF95](https://github.com/JF95)
+- **Carlos Gallardo Polanco** - *Github profile* - [gpcarlos](https://github.com/gpcarlos)
 
 ## Descripción:
   El programa ofrece diferentes estadísticas y archivos .xls en base a los
